@@ -4,3 +4,4 @@ node_modules/
 models/
 evidence/*.jpg
 evidence/*.png
+capture-output/
