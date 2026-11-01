@@ -1,0 +1,47 @@
+{
+  "format": "benchecho-reviewed-observations-v1",
+  "createdAt": "2026-11-01T23:12:54.320Z",
+  "notice": "Human-confirmed notes, not verified measurements. Audio is not embedded; retain original files matching SHA256.",
+  "trials": [
+    {
+      "id": "4f2e6773-2de7-4e0c-9bc6-d8cdd51707bc",
+      "name": "Arm · A",
+      "change": "15 mm spacer",
+      "observations": [
+        {
+          "captureId": "217c900f-5200-4210-8713-73c276827324",
+          "text": "Spacing 15 mm. The motor did not stall.",
+          "source": {
+            "id": "a46c72a4-7bb7-4e72-9c47-a0f977d921b4",
+            "filename": "T1-synthetic.wav",
+            "sha256": "8a6c20b4d266a6dcafca7e2cf8b89c0e68d99552261eb781441e62648c91defa"
+          },
+          "version": 2
+        }
+      ]
+    },
+    {
+      "id": "22dae909-b00d-4973-8e76-d9793a2ff86e",
+      "name": "Arm · B",
+      "change": "50 mm spacer",
+      "observations": [
+        {
+          "captureId": "d19568cc-33bb-4295-82aa-24d39d97322d",
+          "text": "Spacing 50 mm. The motor did stall.",
+          "source": {
+            "id": "ba869825-a25e-4b94-bc0f-b5aa72c69ca8",
+            "filename": "T2-synthetic.wav",
+            "sha256": "291a986d4aa560784d386b2dcc9f09498305868f953e1a1e128d872f18a25bbd"
+          },
+          "version": 2
+        }
+      ]
+    },
+    {
+      "id": "ba3cb1b1-8e31-4293-b1cf-da527ac78f43",
+      "name": "Arm · A2",
+      "change": "repeat run / slip count",
+      "observations": []
+    }
+  ]
+}

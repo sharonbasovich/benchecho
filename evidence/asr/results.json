@@ -1,0 +1,162 @@
+{
+  "loadMs": 577.28462,
+  "fetchAttempts": 0,
+  "synthetic": true,
+  "results": [
+    {
+      "id": "T1",
+      "expected": "Trial A, spacing fifteen millimeters. The motor did not stall.",
+      "seconds": 4.605,
+      "rms": 0.17080462511415864,
+      "inferMs": 801.463081,
+      "raw": {
+        "text": " Dry lay, spacing 15mm, the motor did not stall.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              5
+            ],
+            "text": " Dry lay, spacing 15mm, the motor did not stall."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T2",
+      "expected": "Trial B, spacing fifty millimeters. The motor did stall.",
+      "seconds": 4.02,
+      "rms": 0.16259648747452457,
+      "inferMs": 630.7250100000001,
+      "raw": {
+        "text": " Trial beats pacing 50mm, the motor did stall.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              4
+            ],
+            "text": " Trial beats pacing 50mm, the motor did stall."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T3",
+      "expected": "Trial A two. It slipped twice, correction, three times. No crack was visible.",
+      "seconds": 5.505,
+      "rms": 0.1444790703556855,
+      "inferMs": 723.6014649999997,
+      "raw": {
+        "text": " Try a do, it slipped wise, direction, 3 times, no crack was visible.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              6
+            ],
+            "text": " Try a do, it slipped wise, direction, 3 times, no crack was visible."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T4",
+      "expected": "Trial A three. No load measurement was taken. Do not record zero newtons.",
+      "seconds": 4.705,
+      "rms": 0.17185361211901973,
+      "inferMs": 708.3598230000002,
+      "raw": {
+        "text": " Trial 3, no load measurement was taken, do not record zero newtons.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              5
+            ],
+            "text": " Trial 3, no load measurement was taken, do not record zero newtons."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T5",
+      "expected": "Trial B two. The fan was loud, but the bracket did not move.",
+      "seconds": 4.075,
+      "rms": 0.15190405097482473,
+      "inferMs": 762.439081,
+      "raw": {
+        "text": " \"Dry-al-b-2,\" the fan was loud, but the bracket did not move.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              4
+            ],
+            "text": " \"Dry-al-b-2,\" the fan was loud, but the bracket did not move."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T6",
+      "expected": "",
+      "seconds": 5,
+      "rms": 0,
+      "inferMs": 544.7495220000001,
+      "raw": {
+        "text": "",
+        "chunks": []
+      }
+    },
+    {
+      "id": "T7",
+      "expected": "",
+      "seconds": 5,
+      "rms": 0.057669431552018736,
+      "inferMs": 470.76834299999973,
+      "raw": {
+        "text": "",
+        "chunks": []
+      }
+    },
+    {
+      "id": "T8",
+      "expected": "Trial A, spacing fifteen millimeters. The motor did not stall.",
+      "seconds": 4.605,
+      "rms": 0.19598033745507754,
+      "inferMs": 653.3099840000004,
+      "raw": {
+        "text": " Finally, it's taken 15 million years to notice in that spot.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              4.5
+            ],
+            "text": " Finally, it's taken 15 million years to notice in that spot."
+          }
+        ]
+      }
+    },
+    {
+      "id": "T9",
+      "expected": "This is trial B, not trial D. The result is unknown.",
+      "seconds": 3.65,
+      "rms": 0.16256515226589105,
+      "inferMs": 641.0070609999993,
+      "raw": {
+        "text": " This is dry algae, not dry algae the result isn't known.",
+        "chunks": [
+          {
+            "timestamp": [
+              0,
+              4
+            ],
+            "text": " This is dry algae, not dry algae the result isn't known."
+          }
+        ]
+      }
+    }
+  ]
+}

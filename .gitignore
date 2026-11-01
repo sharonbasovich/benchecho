@@ -1,0 +1,6 @@
+preview.log
+.env.local
+node_modules/
+models/
+evidence/*.jpg
+evidence/*.png

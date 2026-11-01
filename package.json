@@ -1,0 +1,20 @@
+{
+  "name": "benchecho-review-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env.local server.mjs > preview.log 2>&1",
+    "test": "node --test model.test.mjs audio.test.mjs",
+    "start": "node --env-file-if-exists=.env.local server.mjs",
+    "doctor": "node --env-file-if-exists=.env.local doctor.mjs",
+    "setup:model": "node download-model.mjs --download"
+  },
+  "version": "0.1.0",
+  "description": "Source-linked quiet post-trial audio review with offline Whisper drafts",
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1"
+  }
+}

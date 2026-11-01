@@ -1,0 +1,11 @@
+[
+{"id":"T1","text":"Trial A, spacing fifteen millimeters. The motor did not stall."},
+{"id":"T2","text":"Trial B, spacing fifty millimeters. The motor did stall."},
+{"id":"T3","text":"Trial A two. It slipped twice, correction, three times. No crack was visible."},
+{"id":"T4","text":"Trial A three. No load measurement was taken. Do not record zero newtons."},
+{"id":"T5","text":"Trial B two. The fan was loud, but the bracket did not move."},
+{"id":"T6","text":"","seconds":5,"kind":"silence"},
+{"id":"T7","text":"","seconds":5,"kind":"noise","noise":"seeded white noise amplitude 0.1"},
+{"id":"T8","source":"T1","kind":"mixed","noise":"seeded white noise, 5 dB SNR"},
+{"id":"T9","text":"This is trial B, not trial D. The result is unknown."}
+]
