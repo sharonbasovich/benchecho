@@ -16,6 +16,7 @@ try {
  await page.locator('.clip').nth(2).locator('textarea').waitFor({state:'visible',timeout:120000});
  await page.waitForFunction(()=>document.querySelectorAll('.clip').length===3&&[...document.querySelectorAll('.clip textarea')].every(x=>x.value.trim()),{},{timeout:120000});
  event('three actual ASR drafts visible');
+ await page.locator('.clip textarea').nth(0).scrollIntoViewIfNeeded();event('raw first draft visibly held');
  const raw=await page.locator('.clip textarea').evaluateAll(es=>es.map(e=>e.value));
  await fs.writeFile('capture-output/raw-drafts.json',JSON.stringify(raw,null,2));
  await page.screenshot({path:'capture-output/drafts.png',fullPage:true});
@@ -24,7 +25,7 @@ try {
  const corrected=['Trial A, spacing fifteen millimeters. The motor did not stall.','Trial B, spacing fifty millimeters. The motor did stall.','Trial A two. It slipped twice—correction, three times. No crack was visible.'];
  for(let i=0;i<3;i++){
   await at(42+i*9);const card=page.locator('.clip').nth(i);
-  await card.locator('textarea').scrollIntoViewIfNeeded();
+  await card.locator('textarea').scrollIntoViewIfNeeded();await at(45+i*9);event('raw draft shown before correction '+i);
   await card.locator('textarea').fill(corrected[i]);
   await card.getByRole('checkbox').check();
   await card.getByRole('button',{name:'Confirm observation',exact:true}).click();
