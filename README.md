@@ -8,8 +8,8 @@ Turn a short **quiet** bench-test recording into an editable Whisper draft, revi
 
 Tested with Node24.22.1, Transformers.js3.8.1, ONNX Runtime1.21.0 and FFmpeg7.1.5. The package declares Node22+, but Node22 compatibility is untested; Node24.22.1 is the verified runtime. FFmpeg must be installed and on PATH. No account, API key, paid model or hosted AI endpoint is used.
 
-1. Install the pinned direct dependency (no lockfile yet; transitive dependency resolution is not frozen): `npm install` (network download; not performed afresh in this validation run).
-2. Download the pinned public model explicitly: `npm run setup:model` (~42MB model files, plus the separate npm runtime install). The setup script verifies every file's size and SHA256. It is supplied for portability but its network-download path has **not** been run in this environment; existing verified cached assets were used.
+1. Install the pinned direct dependency (no lockfile yet; transitive dependency resolution is not frozen): `npm install` (network download; verified on a fresh Ubuntu24.04 GitHub-hosted runner).
+2. Download the pinned public model explicitly: `npm run setup:model` (~42MB model files, plus the separate npm runtime install). The setup script verifies every file's size and SHA256. The explicit download, all hashes, doctor and8tests passed on a fresh Ubuntu24.04 GitHub-hosted runner (Node24.22.1, FFmpeg6.1.1), run41363381594. Local development used verified cached assets.
 3. Run `npm run doctor` to verify FFmpeg, runtime import and all model hashes.
 4. Run `npm test`, then `npm start`. Open `http://127.0.0.1:4173/`.
 
@@ -31,7 +31,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
-**Ordinary file-chooser upload remains unverified**: native upload approval interrupted that test. Do not interpret the built-in demo as proof that every input path passed. Clean-machine dependency/model download, independent full demo/video review and perceptual audio review remain open. Not submitted.
+**Ordinary file-chooser upload remains unverified**: native upload approval interrupted that test. Do not interpret the built-in demo as proof that every input path passed. Independent full demo/video review and perceptual audio review remain open. Not submitted.
 
 ## Test-only race harness
 

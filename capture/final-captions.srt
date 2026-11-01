@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:17,000
+BenchEcho: quiet post-trial review.
+Automated synthetic walkthrough; corrections use known scripts.
+
+2
+00:00:18,000 --> 00:00:40,000
+Synthetic demonstration, not a real experiment.
+Whisper runs locally and produces editable drafts—not trusted measurements.
+
+3
+00:00:41,000 --> 00:01:08,000
+Review the recording, correct the draft, then confirm.
+Trial identity is chosen before inference, never inferred from speech.
+
+4
+00:01:09,000 --> 00:01:33,000
+Only confirmed observations enter the comparison.
+Edit a note and it leaves the comparison until reviewed again.
+
+5
+00:01:34,000 --> 00:01:54,000
+Export source filenames, hashes and reviewed versions.
+Audio is not embedded: keep the matching original recordings.
+
+6
+00:01:55,000 --> 00:02:15,000
+Quiet recordings only. Noisy tests produced wrong content.
+Session is memory-only. No diagnosis or automatic pass/fail.

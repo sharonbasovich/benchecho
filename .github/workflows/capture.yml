@@ -18,10 +18,12 @@ jobs:
           npm start > /tmp/benchecho-server.log 2>&1 &
           for i in $(seq 1 20); do curl --fail --silent http://127.0.0.1:4173/ > /dev/null && break; sleep 1; done
           curl --fail --silent http://127.0.0.1:4173/ > /dev/null
-          node capture/record.mjs
+          BENCHECHO_FILM=1 node capture/record.mjs
       - if: always()
         run: |
           mkdir -p capture-output
+          cp package-lock.json capture-output/app-package-lock.json 2>/dev/null || true
+          cp capture/package-lock.json capture-output/capture-package-lock.json 2>/dev/null || true
           if test -f /tmp/benchecho-server.log; then cp /tmp/benchecho-server.log capture-output/server.log; fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
