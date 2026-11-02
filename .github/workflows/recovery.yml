@@ -1,0 +1,34 @@
+name: Verify clip deletion recovery
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.22.1
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: npm install && npm run setup:model && npm run doctor && npm test
+      - run: npm install --prefix capture && npx --prefix capture playwright install --with-deps chromium
+      - run: |
+          npm start > /tmp/benchecho-server.log 2>&1 &
+          for i in $(seq 1 20); do curl --fail --silent http://127.0.0.1:4173/ > /dev/null && break; sleep 1; done
+          curl --fail --silent http://127.0.0.1:4173/ > /dev/null
+          node capture/recovery.mjs
+      - if: always()
+        run: |
+          mkdir -p recovery-output
+          cp package-lock.json recovery-output/app-package-lock.json 2>/dev/null || true
+          cp capture/package-lock.json recovery-output/capture-package-lock.json 2>/dev/null || true
+          if test -f /tmp/benchecho-server.log; then cp /tmp/benchecho-server.log recovery-output/server.log; fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: benchecho-clip-recovery
+          retention-days: 3
+          path: recovery-output/
+          if-no-files-found: warn
