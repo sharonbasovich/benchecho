@@ -31,7 +31,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
-**Ordinary file-chooser upload remains unverified**: native upload approval interrupted that test. Do not interpret the built-in demo as proof that every input path passed. Independent full demo/video review and perceptual audio review remain open. Not submitted.
+**Ordinary file-chooser upload remains unverified**: native upload approval interrupted that test. Do not interpret the built-in demo as proof that every input path passed. The silent scripted demo passed independent rendered temporal review (complete one-second coverage, scene-change checks and targeted frame-level inspection), not continuous perception or audio listening. [Watch the unlisted demo](https://youtu.be/2wey28XNSCk). It uses synthetic audio and known-script corrections. Perceptual audio review is not claimed. Not submitted.
 
 ## Test-only race harness
 
