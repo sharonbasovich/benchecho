@@ -28,7 +28,7 @@ try{
  await page.setViewportSize({width:390,height:844});await page.locator('.clip').last().locator('[data-delete]').click();await page.screenshot({path:'recovery-output/narrow-undo.png',fullPage:true});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);await page.locator('#undo-delete').press('Enter');
  // Real delayed response, delete then immediately Undo must not resurrect the old proposal.
- const race=await context.newPage();await race.goto('http://127.0.0.1:4173/?race-test');await race.locator('#demo').click();await expect(race.locator('.clip')).toHaveCount(1);
+ const race=await context.newPage();race.on('pageerror',e=>errors.push(String(e)));await race.goto('http://127.0.0.1:4173/?race-test');await race.locator('#demo').click();await expect(race.locator('.clip')).toHaveCount(1);
  await race.locator('.clip [data-delete]').click();await race.locator('#undo-delete').click();
  await expect(race.locator('.clip')).toHaveCount(3,{timeout:120000});await expect(race.locator('#demo')).toBeEnabled({timeout:120000});
  await expect(race.locator('.clip textarea').first()).toHaveValue('');await expect(race.locator('.clip .tag').first()).toHaveText('captured');
