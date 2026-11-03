@@ -21,13 +21,14 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 - WAV/MP3/WebM, up to60seconds and12MB per file. One transcription at a time.
 - Uploaded audio is decoded through FFmpeg stdin/stdout using an explicit demuxer and pipe-only protocol. No uploaded audio files are written by the server. Memory is not a secure-erasure guarantee.
+- Delete clip removes an observation from comparison immediately. Undo restores the most recently deleted clip with its original audio, note and review state. Deleting another clip replaces that recovery slot. Clear session and closing/reloading remove it. Restored playback stays paused; an interrupted transcription requires explicit Retry.
 - Browser audio and notes live in this tab's memory only. Closing/reloading loses the session; export first. Export does not embed audio, so keep the originals matching the hashes.
 - All AI proposals begin unconfirmed. Spoken names never select the trial. Review cannot prove scientific truth; the app tracks what a person confirmed.
 - This is for quiet **post-trial** review. Original hands-busy/noisy-workshop premise was rejected after actual evaluation. That failure is not erased by the narrower scope.
 
 ## Validation coverage
 
-`npm test`:8 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
+`npm test`:12 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
