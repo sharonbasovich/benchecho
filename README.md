@@ -1,6 +1,6 @@
 # BenchEcho · quiet post-trial review
 
-Turn a short **quiet** bench-test recording into an editable Whisper draft, review it beside its source, and compare only observations you explicitly confirm. Editing a confirmed note removes it from the comparison until you review it again. Exported JSON keeps the source filename, SHA256 and reviewed version.
+Turn a short **quiet** bench-test recording into an editable Whisper draft, review it beside its source, and compare only observations you explicitly confirm. Editing a confirmed note or its trial labels removes it from the comparison until you review it again. Exported JSON keeps the source filename, SHA256 and reviewed version.
 
 **Prototype, not a measurement instrument.** It does not infer trial IDs, extract trusted numbers, diagnose faults or assign pass/fail. Noisy input can produce entirely wrong text. The included synthetic noisy test did exactly that; see [the frozen evaluation](evidence/asr/RESULTS.md). Keep original recordings and check every number/negation. Audio playback progression is not proof an assistant listened.
 
@@ -21,14 +21,15 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 - WAV/MP3/WebM, up to60seconds and12MB per file. One transcription at a time.
 - Uploaded audio is decoded through FFmpeg stdin/stdout using an explicit demuxer and pipe-only protocol. No uploaded audio files are written by the server. Memory is not a secure-erasure guarantee.
-- Delete clip removes an observation from comparison immediately. Undo restores the most recently deleted clip with its original audio, note and review state. Deleting another clip replaces that recovery slot. Clear session and closing/reloading remove it. Restored playback stays paused; an interrupted transcription requires explicit Retry.
+- Delete clip removes an observation from comparison immediately. Undo restores the most recently deleted clip with its original audio and note. If its trial labels changed while it was deleted, it returns unconfirmed and needs fresh review. Deleting another clip replaces that recovery slot. Clear session and closing/reloading remove it. Restored playback stays paused; an interrupted transcription requires explicit Retry.
+- Correct trial labels with **Edit trial**. Saving a changed name or variable preserves recordings and notes but invalidates every affected confirmation, including the Undo-held clip. A no-op preserves confirmations. The reviewed version covers changes to note text and trial labels; it is not an audio revision. Cancel protects unsaved label changes.
 - Browser audio and notes live in this tab's memory only. Closing/reloading loses the session; export first. Export does not embed audio, so keep the originals matching the hashes.
 - All AI proposals begin unconfirmed. Spoken names never select the trial. Review cannot prove scientific truth; the app tracks what a person confirmed.
 - This is for quiet **post-trial** review. Original hands-busy/noisy-workshop premise was rejected after actual evaluation. That failure is not erased by the narrower scope.
 
 ## Validation coverage
 
-`npm test`:12 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
+`npm test`:17 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
