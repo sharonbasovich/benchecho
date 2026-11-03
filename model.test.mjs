@@ -64,3 +64,33 @@ test('pending proposal and manual states remain unconfirmed after metadata corre
  assert.equal(n.view.clips[0].status,'draft');assert.equal(n.compare()[0].observations.length,0);
  assert.throws(()=>n.proposal(draft,'late overwrite'));assert.equal(n.view.clips[1].text,'manual note');
 });
+
+test('revoking confirmation preserves evidence and requires explicit re-confirmation',()=>{
+ const{n,c}=setup();n.proposal(c,'original proposal');n.edit(c,'corrected observation');n.confirm(c,true);
+ const before=n.view.clips[0];assert.equal(n.revokeConfirmation(c),true);
+ assert.deepEqual(n.view.clips[0],{...before,status:'draft',confirmedVersion:null});
+ assert.equal(n.compare()[0].observations.length,0);
+ assert.throws(()=>n.confirm(c,false));assert.equal(n.compare()[0].observations.length,0);
+ n.confirm(c,true);assert.deepEqual(n.view.clips[0],before);
+ assert.equal(n.compare()[0].observations[0].version,before.version);
+});
+
+test('revoking an unconfirmed clip is an idempotent no-op for every draft state',()=>{
+ for(const state of ['captured','draft','empty','revoked']){
+  const{n,c}=setup();if(state==='draft')n.proposal(c,'proposal');
+  if(state==='empty')n.edit(c,'');
+  if(state==='revoked'){n.proposal(c,'proposal');n.confirm(c,true);n.revokeConfirmation(c);}
+  const before=n.view;assert.equal(n.revokeConfirmation(c),false);assert.equal(n.revokeConfirmation(c),false);
+  assert.deepEqual(n.view,before);assert.equal(n.compare()[0].observations.length,0);
+ }
+});
+
+test('delete and Undo preserve revoked review and unrelated confirmations',()=>{
+ const{n,t,c}=setup();const other=n.addClip(t,{id:'b',filename:'b.wav',sha256:'def'});
+ for(const id of [c,other]){n.proposal(id,'reviewed note');n.confirm(id,true);}
+ const otherBefore=n.view.clips[1];n.revokeConfirmation(c);const revoked=n.view.clips[0];
+ n.discardClip(c);assert.deepEqual(n.removed,revoked);n.restoreClip();
+ assert.deepEqual(n.view.clips[0],revoked);assert.deepEqual(n.view.clips[1],otherBefore);
+ assert.deepEqual(n.compare()[0].observations.map(o=>o.captureId),[other]);
+ const before=n.view;assert.throws(()=>n.revokeConfirmation('missing'));assert.deepEqual(n.view,before);
+});

@@ -1,6 +1,6 @@
 # BenchEcho · quiet post-trial review
 
-Turn a short **quiet** bench-test recording into an editable Whisper draft, review it beside its source, and compare only observations you explicitly confirm. Editing a confirmed note or its trial labels removes it from the comparison until you review it again. Exported JSON keeps the source filename, SHA256 and reviewed version.
+Turn a short **quiet** bench-test recording into an editable Whisper draft, review it beside its source, and compare only observations you explicitly confirm. Editing a confirmed note or its trial labels removes it from the comparison until you review it again. Unchecking its review box withdraws confirmation immediately without changing the recording or note; checking it again still requires **Confirm observation**. Exported JSON keeps the source filename, SHA256 and reviewed version.
 
 **Prototype, not a measurement instrument.** It does not infer trial IDs, extract trusted numbers, diagnose faults or assign pass/fail. Noisy input can produce entirely wrong text. The included synthetic noisy test did exactly that; see [the frozen evaluation](evidence/asr/RESULTS.md). Keep original recordings and check every number/negation. Audio playback progression is not proof an assistant listened.
 
@@ -29,7 +29,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 ## Validation coverage
 
-`npm test`:17 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
+`npm test`:20 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 

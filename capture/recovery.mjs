@@ -8,6 +8,27 @@ try{
  await page.goto('http://127.0.0.1:4173/');await page.locator('#demo').click();
  await expect(page.locator('.clip')).toHaveCount(3,{timeout:120000});await expect(page.locator('.clip textarea').last()).not.toHaveValue('',{timeout:120000});
  const first=page.locator('.clip').first();await first.locator('textarea').fill('Known synthetic script: motor did not stall.');await first.locator('[data-review]').check();await first.locator('[data-confirm]').click();
+ // Withdrawal must remove evidence immediately without losing source or note.
+ const second=page.locator('.clip').nth(1);
+ await second.locator('textarea').fill('Second synthetic observation for export exclusion.');
+ await second.locator('[data-review]').check();await second.locator('[data-confirm]').click();
+ const confirmed=await first.evaluate(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,src:e.querySelector('audio').src}));
+ await first.locator('[data-review]').press('Space');
+ await expect(first.locator('[data-review]')).not.toBeChecked();await expect(first.locator('[data-review]')).toBeFocused();
+ await expect(first.locator('.tag')).toHaveText('draft');await expect(page.locator('#count')).toHaveText('1 confirmed');
+ assert.deepEqual(await first.evaluate(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,src:e.querySelector('audio').src})),confirmed);
+ const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();
+ const exported=JSON.parse(await fs.readFile(await(await downloadPromise).path(),'utf8'));
+ assert.equal(exported.trials.flatMap(t=>t.observations).some(o=>o.captureId===confirmed.id),false);
+ assert.equal(exported.trials.flatMap(t=>t.observations).length,1);
+ await first.locator('[data-delete]').click();await page.locator('#undo-delete').click();
+ await expect(first.locator('[data-review]')).not.toBeChecked();await expect(first.locator('.tag')).toHaveText('draft');
+ await first.locator('[data-review]').check();await expect(page.locator('#count')).toHaveText('1 confirmed');
+ await first.locator('[data-confirm]').click();await expect(page.locator('#count')).toHaveText('2 confirmed');
+ await second.locator('[data-review]').uncheck();await expect(page.locator('#count')).toHaveText('1 confirmed');
+ await first.locator('[data-review]').uncheck();await expect(page.locator('#count')).toHaveText('0 confirmed');await expect(page.locator('#export')).toBeDisabled();
+ await first.locator('[data-review]').check();await expect(page.locator('#export')).toBeDisabled();
+ await first.locator('[data-confirm]').click();await expect(page.locator('#count')).toHaveText('1 confirmed');
  const before=await first.evaluate(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,src:e.querySelector('audio').src}));
  await first.locator('audio').evaluate(e=>{e.currentTime=1;e.playbackRate=.25;});await first.locator('[data-delete]').click();
  await expect(page.locator('#undo-delete')).toBeFocused();await expect(page.locator('#count')).toHaveText('0 confirmed');await page.locator('#undo-delete').press('Enter');
@@ -35,5 +56,5 @@ try{
  await race.locator('.clip [data-retry]').first().click();await expect(race.locator('.clip textarea').first()).not.toHaveValue('',{timeout:120000});
  await race.locator('.clip [data-delete]').first().click();race.once('dialog',d=>d.dismiss());await race.locator('#reset').click();await expect(race.locator('#undo-delete')).toBeVisible();
  race.once('dialog',d=>d.accept());await race.locator('#reset').click();await expect(race.locator('.clip')).toHaveCount(0);await expect(race.locator('#recovery')).toBeHidden();
- assert.deepEqual(errors,[]);await fs.writeFile('recovery-output/result.json',JSON.stringify({passed:true,checks:['exact confirmed source/version/text recovery','audio byte hash parity','paused time/rate recovery','actual restored playback','other source continuity','latest-only deletion','newer edit survival','keyboard focus','390px no overflow','late real ASR blocked','explicit retry works','clear cancel and clear recovery'],errors},null,2));
+ assert.deepEqual(errors,[]);await fs.writeFile('recovery-output/result.json',JSON.stringify({passed:true,checks:['keyboard withdrawal removes export eligibility','revoked source/note/version preserved','revocation survives delete and undo','checking alone cannot reconfirm','zero-confirmed export disabled','exact confirmed source/version/text recovery','audio byte hash parity','paused time/rate recovery','actual restored playback','other source continuity','latest-only deletion','newer edit survival','keyboard focus','390px no overflow','late real ASR blocked','explicit retry works','clear cancel and clear recovery'],errors},null,2));
 }finally{await browser.close();}
