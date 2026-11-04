@@ -22,7 +22,9 @@ if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`)return 
 if(p==='/api/transcribe'&&req.method==='POST'){
  if(busy)return send(res,409,{error:'Another clip is processing. Please retry.'});busy=true;
  try{const chunks=[];let size=0;for await(const b of req){size+=b.length;if(size>12*1024*1024)throw Error('File exceeds12MB.');chunks.push(b);}if(!size)throw Error('Empty audio file.');const bytes=Buffer.concat(chunks),stdout=await decode(bytes,formatOf(bytes));const a=new Float32Array(stdout.buffer,stdout.byteOffset,stdout.length/4);if(a.length>16000*60)throw Error('Use a clip of60seconds or less.');if(!a.length)throw Error('No audio found.');const rms=Math.sqrt(a.reduce((s,x)=>s+x*x,0)/a.length);
- const t=performance.now();const result=rms===0?{text:''}:await(await model())(a);send(res,200,{text:result.text.trim(),seconds:a.length/16000,elapsedMs:performance.now()-t,engine:'Whisper tiny.en q8; server-local inference',warning:'Draft only. Replay and correct numbers, negation and names.'});
+ const t=performance.now();let result={text:''};
+ if(rms!==0){const transcriber=await model();result=a.length>16000*30?await transcriber(a,{chunk_length_s:30,stride_length_s:5}):await transcriber(a);}
+ send(res,200,{text:result.text.trim(),seconds:a.length/16000,elapsedMs:performance.now()-t,engine:'Whisper tiny.en q8; server-local inference',warning:'Draft only. Replay and correct numbers, negation and names.'});
  }catch(e){send(res,400,{error:e.message.includes('ffmpeg')?'Audio could not be decoded. Try WAV, MP3 or WebM.':e.message});}finally{busy=false;}return;
 }
 if(req.method!=='GET')return send(res,405,{error:'Method not allowed'});
