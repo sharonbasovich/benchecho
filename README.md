@@ -8,7 +8,7 @@ Turn a short **quiet** bench-test recording into an editable Whisper draft, revi
 
 Tested with Node24.22.1, Transformers.js3.8.1, ONNX Runtime1.21.0 and FFmpeg7.1.5. The package declares Node22+, but Node22 compatibility is untested; Node24.22.1 is the verified runtime. FFmpeg must be installed and on PATH. No account, API key, paid model or hosted AI endpoint is used.
 
-1. Install the pinned direct dependency (no lockfile yet; transitive dependency resolution is not frozen): `npm install` (network download; verified on a fresh Ubuntu24.04 GitHub-hosted runner).
+1. Install the locked dependency tree: `npm ci` (network download). The committed app and capture lockfiles preserve the exact npm resolutions from successful Ubuntu24.04 CI run41737324547, artifact13279541570; `npm ci` rejects manifest/lockfile mismatches instead of silently updating dependencies.
 2. Download the pinned public model explicitly: `npm run setup:model` (~42MB model files, plus the separate npm runtime install). The setup script verifies every file's size and SHA256. The explicit download, all hashes, doctor and8tests passed on a fresh Ubuntu24.04 GitHub-hosted runner (Node24.22.1, FFmpeg6.1.1), run41363381594. Local development used verified cached assets.
 3. Run `npm run doctor` to verify FFmpeg, runtime import and all model hashes.
 4. Run `npm test`, then `npm start`. Open `http://127.0.0.1:4173/`.
