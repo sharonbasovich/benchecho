@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file-if-exists=.env.local server.mjs > preview.log 2>&1",
-    "test": "node --test model.test.mjs audio.test.mjs",
+    "test": "node --test model.test.mjs audio.test.mjs server.test.mjs",
     "start": "node --env-file-if-exists=.env.local server.mjs",
     "doctor": "node --env-file-if-exists=.env.local doctor.mjs",
     "setup:model": "node download-model.mjs --download"

@@ -2,7 +2,18 @@ import {createServer} from 'node:http';import fs from 'node:fs/promises';import 
 const {pipeline,env}=await import(process.env.BENCHECHO_TRANSFORMERS_MODULE||'@huggingface/transformers');
 const root=import.meta.dirname;
 env.allowRemoteModels=false;env.useFSCache=false;let asr,loading,busy=false;
-async function model(){if(!asr){loading??=pipeline('automatic-speech-recognition',path.resolve(process.env.BENCHECHO_MODEL_PATH||path.join(root,'models/whisper-tiny.en')),{dtype:'q8',device:'cpu',session_options:{intraOpNumThreads:1}});asr=await loading;}return asr;}
+async function model(){
+ if(!asr){
+  try{
+   loading??=pipeline('automatic-speech-recognition',path.resolve(process.env.BENCHECHO_MODEL_PATH||path.join(root,'models/whisper-tiny.en')),{dtype:'q8',device:'cpu',session_options:{intraOpNumThreads:1}});
+   asr=await loading;
+  }finally{
+   // Keep successful models, but never cache a failed initialization forever.
+   loading=undefined;
+  }
+ }
+ return asr;
+}
 const send=(res,status,obj)=>res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'}).end(JSON.stringify(obj));
 createServer(async(req,res)=>{try{
 const p=new URL(req.url,'http://localhost').pathname;
