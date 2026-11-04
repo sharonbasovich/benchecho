@@ -19,7 +19,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 ## Data and limits
 
-- WAV/MP3/WebM, up to60seconds and12MB per file. One transcription at a time.
+- WAV/MP3/WebM, up to60seconds and12MB per file. One transcription at a time. Clips longer than 30 seconds use 30-second Whisper chunks with 5-second left/right strides; clips of 30 seconds or less keep the original single-pass path. Chunking prevents input truncation, not recognition errors.
 - Uploaded audio is decoded through FFmpeg stdin/stdout using an explicit demuxer and pipe-only protocol. No uploaded audio files are written by the server. Memory is not a secure-erasure guarantee.
 - Delete clip removes an observation from comparison immediately. Undo restores the most recently deleted clip with its original audio and note. If its trial labels changed while it was deleted, it returns unconfirmed and needs fresh review. Deleting another clip replaces that recovery slot. Clear session and closing/reloading remove it. Restored playback stays paused; an interrupted transcription requires explicit Retry.
 - Correct trial labels with **Edit trial**. Saving a changed name or variable preserves recordings and notes but invalidates every affected confirmation, including the Undo-held clip. A no-op preserves confirmations. The reviewed version covers changes to note text and trial labels; it is not an audio revision. Cancel protects unsaved label changes.
@@ -29,7 +29,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 ## Validation coverage
 
-`npm test` covers private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection. An HTTP integration test uses real FFmpeg decoding with an explicitly fake ASR loader to verify initialization failure → Retry recovery, successful model reuse, concurrent-request rejection, and recovery after inference failure. That injected test does not measure actual Whisper inference or accuracy.
+`npm test` covers private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection. An HTTP integration test uses real FFmpeg decoding with an explicitly fake ASR loader to verify initialization failure → Retry recovery, successful model reuse, concurrent-request rejection, and recovery after inference failure. A second HTTP test checks full decoded input and chunk options at the 30/60-second boundaries, including over-limit rejection. These injected tests do not measure actual Whisper inference or accuracy. [Separate synthetic late-speech evidence](evidence/asr/LONG-CLIP.md) verifies recovery after 30 seconds with the pinned actual model and records remaining transcription errors.
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
