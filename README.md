@@ -15,7 +15,7 @@ Tested with Node24.22.1, Transformers.js3.8.1, ONNX Runtime1.21.0 and FFmpeg7.1.
 
 The app binds localhost only. Do not expose this prototype publicly or put it behind a proxy without a separate security/authentication review. This is a Node app, not a static web page or Cloudflare Worker.
 
-For an existing offline installation, create ignored `.env.local` with `BENCHECHO_MODEL_PATH=/absolute/path/to/whisper-tiny.en`. Optional `BENCHECHO_TRANSFORMERS_MODULE` may point to an existing compatible Transformers.js module. These local paths are not bundled. Default model directory is `models/whisper-tiny.en`. Inference has remote-model fetching disabled. The explicit setup step is separate from inference.
+For an existing offline installation, create ignored `.env.local` with `BENCHECHO_MODEL_PATH=/absolute/path/to/whisper-tiny.en`. Optional `BENCHECHO_TRANSFORMERS_MODULE` may point to an existing compatible Transformers.js module. These local paths are not bundled. Default model directory is `models/whisper-tiny.en`. Inference has remote-model fetching disabled. The explicit setup step is separate from inference. If model initialization fails, fix the local model setup and use **Retry** on the clip. Failed initialization is retried without restarting the server or reloading the tab, so the current notebook stays intact.
 
 ## Data and limits
 
@@ -29,7 +29,7 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 
 ## Validation coverage
 
-`npm test`:20 tests covering private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection.
+`npm test` covers private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection. An HTTP integration test uses real FFmpeg decoding with an explicitly fake ASR loader to verify initialization failure → Retry recovery, successful model reuse, concurrent-request rejection, and recovery after inference failure. That injected test does not measure actual Whisper inference or accuracy.
 
 Actual browser: built-in3-recording → actual Whisper drafts → correction → confirmation → comparison → downloaded JSON. Exact source hashes verified; editing T3 removed it from exported observations. Delayed-response focus/precheck and clear-during-demo exercised. See `evidence/UI-REPORT.md` for precise passes/limits.
 
