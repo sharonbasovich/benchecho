@@ -27,6 +27,16 @@ For an existing offline installation, create ignored `.env.local` with `BENCHECH
 - All AI proposals begin unconfirmed. Spoken names never select the trial. Review cannot prove scientific truth; the app tracks what a person confirmed.
 - This is for quiet **post-trial** review. Original hands-busy/noisy-workshop premise was rejected after actual evaluation. That failure is not erased by the narrower scope.
 
+## Check exported recording bytes
+
+Use the dependency-free offline verifier with an exported manifest and explicit original recording paths:
+
+```sh
+node tools/byte-verifier/cli.mjs benchecho-evidence.json recording.wav renamed-recording.webm
+```
+
+Files match by SHA256, not filename. Missing references and unreadable inputs return nonzero exit codes. This checks byte correspondence only, not the truth of observations or authenticity of the manifest. See [usage, limits, and exit codes](tools/byte-verifier/README.md). No model or server is needed.
+
 ## Validation coverage
 
 `npm test` covers private-state isolation, stale proposal rejection, confirmation invalidation, cleanup references, and actual WAV/MP3/WebM decoding plus malformed/playlist rejection. An HTTP integration test uses real FFmpeg decoding with an explicitly fake ASR loader to verify initialization failure → Retry recovery, successful model reuse, concurrent-request rejection, and recovery after inference failure. A second HTTP test checks full decoded input and chunk options at the 30/60-second boundaries, including over-limit rejection. These injected tests do not measure actual Whisper inference or accuracy. [Separate synthetic late-speech evidence](evidence/asr/LONG-CLIP.md) verifies recovery after 30 seconds with the pinned actual model and records remaining transcription errors.
