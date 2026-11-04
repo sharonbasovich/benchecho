@@ -1,5 +1,6 @@
 // Real Chromium + real local Whisper, using synthetic repository audio only.
 import {chromium,expect} from '@playwright/test';
+import {verify} from '../tools/byte-verifier/verify.mjs';
 import fs from 'node:fs/promises';import assert from 'node:assert/strict';import {createHash} from 'node:crypto';
 await fs.mkdir('recovery-output',{recursive:true});
 const browser=await chromium.launch(),context=await browser.newContext({viewport:{width:1280,height:900}}),page=await context.newPage(),errors=[];
@@ -7,6 +8,19 @@ page.on('pageerror',e=>errors.push(String(e)));
 try{
  await page.goto('http://127.0.0.1:4173/');await page.locator('#demo').click();
  await expect(page.locator('.clip')).toHaveCount(3,{timeout:120000});await expect(page.locator('.clip textarea').last()).not.toHaveValue('',{timeout:120000});
+ // Native source downloads preserve original bytes, without confirming or editing notes.
+ const savedSources=[];
+ const sourceState=await page.locator('.clip').evaluateAll(els=>els.map(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,status:e.querySelector('.tag').textContent,checked:e.querySelector('[data-review]').checked})));
+ for(let index=0;index<3;index++){
+  const link=page.locator('.clip').nth(index).getByRole('link',{name:'Save original recording',exact:true});
+  await link.focus();
+  const event=page.waitForEvent('download');await link.press('Enter');const download=await event;
+  assert.equal(download.suggestedFilename(),`T${index+1}-synthetic.wav`);
+  const path=`recovery-output/saved-original-${index+1}.wav`;await download.saveAs(path);savedSources.push(path);
+  assert.deepEqual(await fs.readFile(path),await fs.readFile(`public/samples/T${index+1}.wav`));
+ }
+ assert.deepEqual(await page.locator('.clip').evaluateAll(els=>els.map(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,status:e.querySelector('.tag').textContent,checked:e.querySelector('[data-review]').checked}))),sourceState);
+ await expect(page.locator('#count')).toHaveText('0 confirmed');await expect(page.locator('#export')).toBeDisabled();
  const first=page.locator('.clip').first();await first.locator('textarea').fill('Known synthetic script: motor did not stall.');await first.locator('[data-review]').check();await first.locator('[data-confirm]').click();
  // Withdrawal must remove evidence immediately without losing source or note.
  const second=page.locator('.clip').nth(1);
@@ -21,6 +35,8 @@ try{
  const exported=JSON.parse(await fs.readFile(await(await downloadPromise).path(),'utf8'));
  assert.equal(exported.trials.flatMap(t=>t.observations).some(o=>o.captureId===confirmed.id),false);
  assert.equal(exported.trials.flatMap(t=>t.observations).length,1);
+ await fs.writeFile('recovery-output/downloaded-manifest.json',JSON.stringify(exported));
+ const verified=await verify('recovery-output/downloaded-manifest.json',savedSources);assert.equal(verified.exitCode,0);assert.equal(verified.summary.matched,1);await fs.writeFile('recovery-output/source-roundtrip.json',JSON.stringify(verified,null,2));
  await first.locator('[data-delete]').click();await page.locator('#undo-delete').click();
  await expect(first.locator('[data-review]')).not.toBeChecked();await expect(first.locator('.tag')).toHaveText('draft');
  await first.locator('[data-review]').check();await expect(page.locator('#count')).toHaveText('1 confirmed');
@@ -34,6 +50,7 @@ try{
  await expect(page.locator('#undo-delete')).toBeFocused();await expect(page.locator('#count')).toHaveText('0 confirmed');await page.locator('#undo-delete').press('Enter');
  await expect(first.locator('textarea')).toBeFocused();await expect(page.locator('#count')).toHaveText('1 confirmed');
  assert.deepEqual(await first.evaluate(e=>({id:e.dataset.id,version:e.dataset.version,text:e.querySelector('textarea').value,src:e.querySelector('audio').src})),before);
+ const restoredDownloadEvent=page.waitForEvent('download');await first.getByRole('link',{name:'Save original recording',exact:true}).click();const restoredDownload=await restoredDownloadEvent;assert.deepEqual(await fs.readFile(await restoredDownload.path()),await fs.readFile('public/samples/T1.wav'));
  await expect.poll(()=>first.locator('audio').evaluate(e=>e.readyState)).toBeGreaterThan(0);
  assert.equal(await first.locator('audio').evaluate(e=>e.paused),true);assert.equal(await first.locator('audio').evaluate(e=>e.currentTime),1);assert.equal(await first.locator('audio').evaluate(e=>e.playbackRate),.25);
  const restoredBytes=await first.locator('audio').evaluate(async e=>Array.from(new Uint8Array(await(await fetch(e.src)).arrayBuffer())));
@@ -56,5 +73,5 @@ try{
  await race.locator('.clip [data-retry]').first().click();await expect(race.locator('.clip textarea').first()).not.toHaveValue('',{timeout:120000});
  await race.locator('.clip [data-delete]').first().click();race.once('dialog',d=>d.dismiss());await race.locator('#reset').click();await expect(race.locator('#undo-delete')).toBeVisible();
  race.once('dialog',d=>d.accept());await race.locator('#reset').click();await expect(race.locator('.clip')).toHaveCount(0);await expect(race.locator('#recovery')).toBeHidden();
- assert.deepEqual(errors,[]);await fs.writeFile('recovery-output/result.json',JSON.stringify({passed:true,checks:['keyboard withdrawal removes export eligibility','revoked source/note/version preserved','revocation survives delete and undo','checking alone cannot reconfirm','zero-confirmed export disabled','exact confirmed source/version/text recovery','audio byte hash parity','paused time/rate recovery','actual restored playback','other source continuity','latest-only deletion','newer edit survival','keyboard focus','390px no overflow','late real ASR blocked','explicit retry works','clear cancel and clear recovery'],errors},null,2));
+ assert.deepEqual(errors,[]);await fs.writeFile('recovery-output/result.json',JSON.stringify({passed:true,checks:['three keyboard source downloads byte-match samples without changing review state','downloaded manifest and saved source round-trip through offline verifier','keyboard withdrawal removes export eligibility','revoked source/note/version preserved','revocation survives delete and undo','checking alone cannot reconfirm','zero-confirmed export disabled','exact confirmed source/version/text recovery','audio byte hash parity','paused time/rate recovery','actual restored playback','other source continuity','latest-only deletion','newer edit survival','keyboard focus','390px no overflow','late real ASR blocked','explicit retry works','clear cancel and clear recovery'],errors},null,2));
 }finally{await browser.close();}
